@@ -125,11 +125,13 @@ enum {
     GRALLOC_USAGE_PRIVATE_MASK          = 0xF0000000,
 };
 
+#ifdef QCOM_HARDWARE
 enum {
     /* Gralloc perform enums */
     GRALLOC_MODULE_PERFORM_UPDATE_BUFFER_GEOMETRY = 0,
     GRALLOC_MODULE_PERFORM_PRIVATE_START
 };
+#endif
 
 /*****************************************************************************/
 
@@ -258,6 +260,7 @@ typedef struct gralloc_module_t {
 typedef struct alloc_device_t {
     struct hw_device_t common;
 
+#ifdef QCOM_HARDWARE
     /*
      * (*allocSize)() Allocates a buffer in graphic memory with the requested
      * bufferSize parameter and returns a buffer_handle_t and the stride in
@@ -270,6 +273,7 @@ typedef struct alloc_device_t {
     int (*allocSize)(struct alloc_device_t* dev,
             int w, int h, int format, int usage,
             buffer_handle_t* handle, int* stride, int bufferSize);
+#endif
 
     /* 
      * (*alloc)() Allocates a buffer in graphic memory with the requested
