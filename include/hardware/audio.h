@@ -60,11 +60,7 @@ __BEGIN_DECLS
 #define AUDIO_DEVICE_API_VERSION_0_0 HARDWARE_DEVICE_API_VERSION(0, 0)
 #define AUDIO_DEVICE_API_VERSION_1_0 HARDWARE_DEVICE_API_VERSION(1, 0)
 #define AUDIO_DEVICE_API_VERSION_2_0 HARDWARE_DEVICE_API_VERSION(2, 0)
-#ifndef ICS_AUDIO_BLOB
 #define AUDIO_DEVICE_API_VERSION_CURRENT AUDIO_DEVICE_API_VERSION_2_0
-#else
-#define AUDIO_DEVICE_API_VERSION_CURRENT AUDIO_DEVICE_API_VERSION_1_0
-#endif
 
 /**
  * List of known audio HAL modules. This is the base name of the audio HAL
@@ -295,7 +291,6 @@ struct audio_stream_out {
     int (*get_render_position)(const struct audio_stream_out *stream,
                                uint32_t *dsp_frames);
 
-#ifndef ICS_AUDIO_BLOB
 #ifdef QCOM_HARDWARE
     /**
      * start audio data rendering
@@ -348,7 +343,6 @@ struct audio_stream_out {
      */
     int (*is_buffer_available) (const struct audio_stream_out *stream,
                                      int *isAvail);
-#endif
 #endif
 
 };
@@ -529,7 +523,6 @@ struct audio_hw_device {
      */
     int (*set_master_volume)(struct audio_hw_device *dev, float volume);
 
-#ifndef ICS_AUDIO_BLOB
     /**
      * Get the current master volume value for the HAL, if the HAL supports
      * master volume control.  AudioFlinger will query this value from the
@@ -538,8 +531,6 @@ struct audio_hw_device {
      * this method may leave it set to NULL.
      */
     int (*get_master_volume)(struct audio_hw_device *dev, float *volume);
-#endif
-
 
     /**
      * set_mode is called when the audio mode changes. AUDIO_MODE_NORMAL mode
@@ -567,39 +558,20 @@ struct audio_hw_device {
      * See also get_buffer_size which is for a particular stream.
      */
     size_t (*get_input_buffer_size)(const struct audio_hw_device *dev,
-#ifndef ICS_AUDIO_BLOB
                                     const struct audio_config *config);
-#else
-                                    uint32_t sample_rate, int format,
-                                    int channel_count);
-#endif
 
     /** This method creates and opens the audio hardware output stream */
-#ifndef ICS_AUDIO_BLOB
     int (*open_output_stream)(struct audio_hw_device *dev,
                               audio_io_handle_t handle,
                               audio_devices_t devices,
                               audio_output_flags_t flags,
                               struct audio_config *config,
                               struct audio_stream_out **stream_out);
-#else
-    int (*open_output_stream)(struct audio_hw_device *dev, uint32_t devices,
-                              int *format, uint32_t *channels,
-                              uint32_t *sample_rate,
-                              struct audio_stream_out **out);
-#endif
-
-#ifdef QCOM_ICS_LPA_COMPAT
-    /** This method creates and opens the audio hardware output session */
-    int (*open_output_session)(struct audio_hw_device *dev, uint32_t devices,
-                              int *format, int sessionId,
-                              struct audio_stream_out **out);
-#endif
 
     void (*close_output_stream)(struct audio_hw_device *dev,
                                 struct audio_stream_out* stream_out);
 
-#if defined (QCOM_HARDWARE) || defined (STE_SAMSUNG_HARDWARE)
+#ifdef QCOM_HARDWARE
     /** This method creates and opens the audio hardware output
      *  for broadcast stream */
     int (*open_broadcast_stream)(struct audio_hw_device *dev, uint32_t devices,
@@ -613,19 +585,11 @@ struct audio_hw_device {
 #endif
 
     /** This method creates and opens the audio hardware input stream */
-#ifndef ICS_AUDIO_BLOB
     int (*open_input_stream)(struct audio_hw_device *dev,
                              audio_io_handle_t handle,
                              audio_devices_t devices,
                              struct audio_config *config,
                              struct audio_stream_in **stream_in);
-#else
-    int (*open_input_stream)(struct audio_hw_device *dev, uint32_t devices,
-                             int *format, uint32_t *channels,
-                             uint32_t *sample_rate,
-                             audio_in_acoustics_t acoustics,
-                             struct audio_stream_in **stream_in);
-#endif
 
     void (*close_input_stream)(struct audio_hw_device *dev,
                                struct audio_stream_in *stream_in);
@@ -633,7 +597,6 @@ struct audio_hw_device {
     /** This method dumps the state of the audio hardware */
     int (*dump)(const struct audio_hw_device *dev, int fd);
 
-#ifndef ICS_AUDIO_BLOB
     /**
      * set the audio mute status for all audio activities.  If any value other
      * than 0 is returned, the software mixer will emulate this capability.
@@ -648,7 +611,6 @@ struct audio_hw_device {
      * method may leave it set to NULL.
      */
     int (*get_master_mute)(struct audio_hw_device *dev, bool *mute);
-#endif
 
 #ifdef QCOM_LISTEN_FEATURE_ENABLE
     /** This method opens the listen session and returns a handle */
